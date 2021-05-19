@@ -4,7 +4,7 @@ from django.shortcuts import render
 from rest_framework import generics
 from blog import serializers
 from django.contrib.auth.models import User
-from blog.models import Post, Comment
+from blog.models import Post, Comment, Category
 from rest_framework import permissions
 from blog.permissions import IsOwnerOrReadOnly
 
@@ -49,5 +49,16 @@ class CommentDetail(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
 
 
+class CategoryList(generics.ListCreateAPIView):
+    queryset = Category.objects.all()
+    serializer_class = serializers.CategorySerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
+    def perform_create(self, serializer):
+        serializer.save(owner=self.request.user)
 
 
+class CategoryDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Category.objects.all()
+    serializer_class = serializers.CategorySerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
